@@ -5,6 +5,7 @@
  */
 package graphicalfoodsearch;
 
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +20,7 @@ public class GraphicalFoodSearch {
 	public static void main(String[] args) {
             BigOvenDB db = new BigOvenDB();
             try {
-                Recipe recipe = db.getRecipeById("1");
+                Vector<Recipe> recipe = db.searchByIngredient("potato");
                 int stuffs = 0;
             } catch (Exception ex) {
                 Logger.getLogger(GraphicalFoodSearch.class.getName()).log(Level.SEVERE, null, ex);
