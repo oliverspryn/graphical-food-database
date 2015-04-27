@@ -5,6 +5,9 @@
  */
 package graphicalfoodsearch;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author GEARHARTJJ1
@@ -14,8 +17,16 @@ public class GraphicalFoodSearch {
      * @param args the command line arguments
      */
 	public static void main(String[] args) {
-		Window w;
-		w = new Window("BigOven Graph Application");
-		w.SetExtension(".bga");
+            BigOvenDB db = new BigOvenDB();
+            try {
+                Recipe recipe = db.getRecipeById("1");
+                int stuffs = 0;
+            } catch (Exception ex) {
+                Logger.getLogger(GraphicalFoodSearch.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+            Window w;
+            w = new Window("BigOven Graph Application");
+            w.SetExtension(".bga");
 	}
 }
