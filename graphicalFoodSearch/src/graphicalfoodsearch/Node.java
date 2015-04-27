@@ -1,6 +1,7 @@
 
 package graphicalfoodsearch;
 
+import java.awt.FontMetrics;
 import javax.swing.JPanel;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -18,15 +19,16 @@ public class Node extends JPanel{
     }
     
     public void paint(Graphics g) {
-        float width = 50;
-        float height = 25;
-        
-        Graphics2D g2 = (Graphics2D) g;
+        FontMetrics metrics = g.getFontMetrics();
+        float width = metrics.stringWidth(text) + 10;
+        float height = 20;
        
+        Graphics2D g2 = (Graphics2D) g;
+
         //draw a rectangle
-        g2.draw(new Rectangle2D.Float(x-width/2, y-height/2, width/2, height/2));
+        g2.draw(new Rectangle2D.Float(x, y, width, height));
         //draw the text
-        g2.drawString(text,x-width/2 + 5, y-height/2);
+        g2.drawString(text,x + 5, y + height * 3/4);
         
     }
 }
