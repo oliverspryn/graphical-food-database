@@ -72,6 +72,29 @@ public class GraphicalFoodSearch {
                     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 }
             });
+            
+            //// TEST CODE FOR TREE DRAWING
+            BigOvenDB db = new BigOvenDB();
+            try {
+                Vector<Recipe> recipes = db.searchByIngredient("potato");
+                for(Recipe r : recipes){
+                    db.getRecipeAndIngredientsById(r.id);
+                }
+                
+                // Find the "potato" Ingredient and draw the tree with it as the root
+                if(recipes.size() > 0) {
+                    for(Ingredient i : recipes.get(0).ingredients) {
+                        if("potato".equals(i.ingredientName)) {
+                            RefreshTree(i);
+                            w.revalidate();
+                            w.repaint();
+                            break;
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(GraphicalFoodSearch.class.getName()).log(Level.SEVERE, null, ex);
+            }
 	}
         
         // Clears and re-builds the visualization tree based on currently stored data
@@ -155,5 +178,8 @@ public class GraphicalFoodSearch {
                     }
                 }
             }
+            
+            Canvas.revalidate();
+            Canvas.repaint();
         }
 }

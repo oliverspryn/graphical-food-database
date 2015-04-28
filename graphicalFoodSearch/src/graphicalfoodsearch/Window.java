@@ -3,6 +3,7 @@ package graphicalfoodsearch;
 import graphicalfoodsearch.beans.FileBean;
 import graphicalfoodsearch.enums.OperationType;
 import graphicalfoodsearch.listeners.IFileListener;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -84,7 +85,8 @@ public class Window extends JFrame implements ActionListener {
 	//Setup the JPanel as a canvas
 		Canvas = new JPanel();
 		Canvas.setBackground(Color.WHITE);
-		add(Canvas);
+		//add(Canvas);
+                getContentPane().add(Canvas, BorderLayout.CENTER);
 		
 	//Configure the file browser extension
 		Extension = "*.*";
