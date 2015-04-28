@@ -7,8 +7,6 @@
 //need to get the recipes put in the set from querying by id...
 //alternatively the item could be modified when the by id method is used?
 
-//also need to have the new ingredients added to the set include the first recipe in referencing recipes
-
 package graphicalfoodsearch;
 
 import java.io.InputStream;
@@ -38,7 +36,8 @@ public class BigOvenDB {
     private final String START_URL = "http://api.bigoven.com";
     private final String API_STRING = "dvxOohB1k0rgliIz7TMZj4x6eGJ93GOD";
     
-    //has side effect of adding the ingredients to the set of ingredients
+    //has side effect of adding the ingredients to the set of ingredients, and updating the recipeUsedIm vector for the ingredient
+    //also updates the Recipe in the set so that it has the ingredients it is connected with
     public Recipe getRecipeAndIngredientsById(String id) throws Exception {
         String url = START_URL+"/recipe/"+id+"?api_key="+API_STRING;
  
@@ -64,6 +63,14 @@ public class BigOvenDB {
         //get just the first node since this function should get just one recipe
         Node recipeNode = recipes.item(0);
         Recipe r = getRecipeFromNode(recipeNode);
+        //add the ingedients to the Recipe object in the set since bigOven doesn't give it with search results
+        for(Recipe recipe : FoodGraphData.recipes){
+            if(recipe.recipeName.equals(r.recipeName)){
+                recipe.ingredients = r.ingredients;
+                break;
+            }
+        }
+        
         //add ingredients from this recipe to the current node
         for(Ingredient ingredient : r.ingredients) {
             ingredient.recipesUsedIn.add(r);
