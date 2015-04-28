@@ -5,6 +5,8 @@
  */
 package graphicalfoodsearch;
 
+import java.util.Vector;
+
 /**
  *
  * @author GEARHARTJJ1
@@ -15,4 +17,6 @@ public class Ingredient {
     public String prepWork;
     //used in correlation with the amount, like grams, bottles, etc.
     public String ingredientUnit;
+    
+    public Vector<Recipe> recipes = new Vector<>();
 }
