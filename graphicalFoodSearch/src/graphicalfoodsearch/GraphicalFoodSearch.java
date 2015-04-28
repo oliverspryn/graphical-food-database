@@ -5,8 +5,10 @@
  */
 package graphicalfoodsearch;
 
+import graphicalfoodsearch.beans.ClickBean;
 import graphicalfoodsearch.beans.FileBean;
 import graphicalfoodsearch.listeners.IFileListener;
+import graphicalfoodsearch.listeners.IMouseListener;
 import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -57,7 +59,16 @@ public class GraphicalFoodSearch {
             w = new Window("BigOven Graph Application");
             w.SetExtension(".bga");
 			
-			w.RegisterListener(new IFileListener() {
+			w.RegisterClickListener(new IMouseListener() {
+				@Override
+				public void ClickHandler(ClickBean bean) {
+					System.out.print(bean.GetX());
+					System.out.print(" x ");
+					System.out.println(bean.GetY());
+				}
+			});
+			
+			w.RegisterFileListener(new IFileListener() {
 				@Override
 				public void NewHandler() {
 					throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
