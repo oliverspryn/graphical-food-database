@@ -5,6 +5,7 @@
  */
 package graphicalfoodsearch;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Vector;
 
@@ -12,7 +13,7 @@ import java.util.Vector;
  *
  * @author GEARHARTJJ1
  */
-public class Ingredient {
+public class Ingredient implements Serializable{
     public String ingredientName = "";
     public Double amountNeeded = -1.0;
     public String prepWork = "";
