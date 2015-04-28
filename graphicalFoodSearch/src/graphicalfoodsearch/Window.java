@@ -4,8 +4,8 @@ import graphicalfoodsearch.beans.ClickBean;
 import graphicalfoodsearch.beans.FileBean;
 import graphicalfoodsearch.enums.OperationType;
 import graphicalfoodsearch.listeners.IFileListener;
-import java.awt.BorderLayout;
 import graphicalfoodsearch.listeners.IMouseListener;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -116,18 +116,18 @@ public class Window extends JFrame implements ActionListener {
 			@Override
 			public void mouseClicked(MouseEvent me) {
 				if(SwingUtilities.isLeftMouseButton(me)) {
-					if(!PopUpOpen) {
+					if(PopUpOpen) {
+						PopUpOpen = false;
+					} else {
 					//Populate the Java bean
 						ClickBean click = new ClickBean();
 						click.SetX(me.getX());
 						click.SetY(me.getY());
-
+						
 					//Dispatch the event
 						ClickHandlers.stream().forEach((l) -> {
-							l.ClickHandler(click);	
-						});	
-					} else {
-						PopUpOpen = false;
+							l.ClickHandler(click);
+						});
 					}
 				} else if (SwingUtilities.isRightMouseButton(me)) {
 					PopUp.show(me.getComponent(), me.getX(), me.getY());
@@ -203,6 +203,11 @@ public class Window extends JFrame implements ActionListener {
 	}
 	
 	private File OpenFileBrowser(BrowserType type) {
+		FileBrowser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		FileBrowser.addChoosableFileFilter(Filter);
+		FileBrowser.setAcceptAllFileFilterUsed(false);
+		FileBrowser.setFileFilter(Filter);
+		
 		if (type == BrowserType.OPEN) {
 			if(FileBrowser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
 				return null;
@@ -213,9 +218,6 @@ public class Window extends JFrame implements ActionListener {
 			}
 		}
 		
-		FileBrowser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		FileBrowser.addChoosableFileFilter(Filter);
-		FileBrowser.setFileFilter(Filter);
 		return FileBrowser.getSelectedFile();
 	}
 	
