@@ -51,27 +51,27 @@ public class GraphicalFoodSearch {
             w = new Window("BigOven Graph Application");
             w.SetExtension(".bga");
 			
-			w.RegisterListener(new IFileListener() {
-				@Override
-				public void NewHandler() {
-					throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-				}
+            w.RegisterListener(new IFileListener() {
+                @Override
+                public void NewHandler() {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
 
-				@Override
-				public void OpenHandler(FileBean bean) {
-					throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-				}
+                @Override
+                public void OpenHandler(FileBean bean) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
 
-				@Override
-				public void SaveHandler(FileBean bean) {
-					throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-				}
+                @Override
+                public void SaveHandler(FileBean bean) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
 
-				@Override
-				public void SaveAsHandler(FileBean bean) {
-					throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-				}
-			});
+                @Override
+                public void SaveAsHandler(FileBean bean) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
+            });
 	}
         
         // Clears and re-builds the visualization tree based on currently stored data
