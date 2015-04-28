@@ -1,9 +1,24 @@
 package graphicalfoodsearch;
 
-import java.awt.*;
-import java.awt.event.*;
+import graphicalfoodsearch.beans.FileBean;
+import graphicalfoodsearch.enums.OperationType;
+import graphicalfoodsearch.listeners.IFileListener;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.io.File;
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
 
 enum BrowserType {
@@ -50,6 +65,9 @@ public class Window extends JFrame implements ActionListener {
 	private final JPanel Canvas;
 	private final Dimension Size;
 	private final Toolkit Toolkit;
+	
+//Event listener registry
+	List<IFileListener> FileHandlers;
 
 	public Window(String title) {
 		super(title);
@@ -76,18 +94,48 @@ public class Window extends JFrame implements ActionListener {
 		SetupMenu();
 		revalidate();
 		repaint();
+		
+	//Prepare the event registry
+		FileHandlers = new ArrayList<IFileListener>();
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		String path;
+		File file;
 		
 		if(e.getSource() == New) {
-			System.out.println("Super dude");
+			FileBean event = new FileBean();
+			event.SetOperation(OperationType.NEW);
 		} else if (e.getSource() == Open) {
-			path = OpenFileBrowser(BrowserType.OPEN);
+			file = OpenFileBrowser(BrowserType.OPEN);
+			
+			if(file != null) {
+			//Populate the Java bean
+				FileBean event = new FileBean();
+				event.SetDirectory(file.getParent());
+				event.SetFileName(file.getAbsoluteFile().getName());
+				event.SetFilePath(file.getAbsolutePath());
+				event.SetOperation(OperationType.OPEN);
+				
+			//Dispatch the event
+				for(IFileListener l : FileHandlers)
+					l.OpenHandler(event);
+			}
 		} else if (e.getSource() == Save || e.getSource() == SaveAs) {
-			path = OpenFileBrowser(BrowserType.SAVE);
+			file = OpenFileBrowser(BrowserType.SAVE);
+			
+			if(file != null) {
+			//Populate the Java bean
+				FileBean event = new FileBean();
+				event.SetDirectory(file.getParent());
+				event.SetFileName(file.getAbsoluteFile().getName());
+				event.SetFilePath(file.getAbsolutePath());
+				event.SetOperation(e.getSource() == Save ? OperationType.SAVE : OperationType.SAVE_AS);
+				
+			//Dispatch the event
+				for(IFileListener l : FileHandlers)
+					l.OpenHandler(event);
+			}
 		} else if (e.getSource() == Exit) {
 			dispose();
 		}
@@ -97,8 +145,8 @@ public class Window extends JFrame implements ActionListener {
 		return Canvas;
 	}
 	
-	private String OpenFileBrowser(BrowserType type) {
-		int result = -1;//FileBrowser.show
+	private File OpenFileBrowser(BrowserType type) {
+		int result = -1;
 		
 		if (type == BrowserType.OPEN) {
 			result = FileBrowser.showOpenDialog(this);
@@ -106,10 +154,18 @@ public class Window extends JFrame implements ActionListener {
 			result = FileBrowser.showSaveDialog(this);
 		}
 		
+		if (result != JFileChooser.APPROVE_OPTION) {
+			return null;
+		}
+		
 		FileBrowser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		FileBrowser.addChoosableFileFilter(Filter);
 		FileBrowser.setFileFilter(Filter);
-		return "Things";
+		return FileBrowser.getSelectedFile();
+	}
+	
+	public void RegisterListener(IFileListener handler) {
+		FileHandlers.add(handler);
 	}
 	
 	public void SetExtension(String extension) {
