@@ -51,7 +51,7 @@ public class GraphicalFoodSearch {
             }*/
             
             w = new Window("BigOven Graph Application");
-            w.SetExtension(".bga");
+            w.SetExtension("bga");
 			
 			w.RegisterClickListener(new IMouseListener() {
 				@Override

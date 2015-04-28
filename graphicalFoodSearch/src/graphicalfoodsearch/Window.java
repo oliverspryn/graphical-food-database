@@ -2,6 +2,7 @@ package graphicalfoodsearch;
 
 import graphicalfoodsearch.beans.ClickBean;
 import graphicalfoodsearch.beans.FileBean;
+import graphicalfoodsearch.enums.BrowserType;
 import graphicalfoodsearch.enums.OperationType;
 import graphicalfoodsearch.listeners.IFileListener;
 import graphicalfoodsearch.listeners.IMouseListener;
@@ -26,37 +27,13 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileFilter;
-
-enum BrowserType {
-	OPEN, SAVE;
-}
-
-class BigOvenFiles extends FileFilter {
-	private final String Description;
-	private final String Extension;
-	
-	public BigOvenFiles(String extension, String description) {
-		Description = description;
-		Extension = extension;
-	}
-	
-	@Override
-	public boolean accept(File file) {
-		return (file.isDirectory() || file.getName().toLowerCase().endsWith(Extension));
-	}
-
-	@Override
-	public String getDescription() {
-		return Description;
-	}
-}
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class Window extends JFrame implements ActionListener {
 //File browser
 	private String Extension;
 	private final JFileChooser FileBrowser;
-	private BigOvenFiles Filter;
+	private FileNameExtensionFilter Filter;
 	
 //Menu handles
 	private JMenu File;
@@ -100,7 +77,7 @@ public class Window extends JFrame implements ActionListener {
 		
 	//Configure the file browser extension
 		Extension = "*.*";
-		Filter = new BigOvenFiles(Extension, "All Readable Files");
+		Filter = new FileNameExtensionFilter(Extension, "All Readable Files");
 		
 	//Create the menu
 		SetupMenu();
@@ -231,7 +208,7 @@ public class Window extends JFrame implements ActionListener {
 	
 	public void SetExtension(String extension) {
 		Extension = extension;
-		Filter = new BigOvenFiles(extension, String.format("BigOven Graph Files (%s)", extension));
+		Filter = new FileNameExtensionFilter(String.format("BigOven Graph Files (.%s)", extension), extension);
 	}
 	
 	private void SetupMenu() {
