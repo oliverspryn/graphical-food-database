@@ -73,7 +73,7 @@ public class Canvas extends JPanel {
                         int nodeCount = traversed.size();
                         int currentDepth = (int) Math.floor(Math.log(nodeCount) / Math.log(2));
                         int yCoord = currentDepth * 40 + 5;
-                        int xSpacing = this.getWidth() / (ingredient.recipesUsedIn.size() + 1);
+                        int xSpacing = (int) (this.getWidth() / (Math.pow(2, currentDepth) + 1));
                         int xCoord = (i + 1) * xSpacing;
 
                         drawNode(g, xCoord, yCoord, recipe.recipeName);
@@ -93,7 +93,7 @@ public class Canvas extends JPanel {
                         int nodeCount = traversed.size();
                         int currentDepth = (int) Math.floor(Math.log(nodeCount) / Math.log(2));
                         int yCoord = currentDepth * 40 + 5;
-                        int xSpacing = this.getWidth() / (recipe.ingredients.size() + 1);
+                        int xSpacing = (int) (this.getWidth() / (Math.pow(2, currentDepth) + 1));
                         int xCoord = (i + 1) * xSpacing;
 
                         drawNode(g, xCoord, yCoord, ingredient.ingredientName);
