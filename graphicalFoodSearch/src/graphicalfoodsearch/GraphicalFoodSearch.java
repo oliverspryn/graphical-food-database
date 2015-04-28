@@ -19,18 +19,25 @@ public class GraphicalFoodSearch {
      * @param args the command line arguments
      */
 	public static void main(String[] args) {
-            BigOvenDB db = new BigOvenDB();
+            /*BigOvenDB db = new BigOvenDB();
             try {
                 Vector<Recipe> recipes = db.searchByIngredient("potato");
                 for(Recipe r : recipes){
                     db.getRecipeAndIngredientsById(r.id);
                 }
                 Set<Ingredient> testIngr = FoodGraphData.ingredients;
+                for(Ingredient i : testIngr){
+                    System.out.println(i.ingredientName);
+                    for(Recipe r : i.recipesUsedIn){
+                        System.out.print(r.recipeName+"   ");
+                    }
+                    System.out.println();
+                }
                 Set<Recipe> testRecipe = FoodGraphData.recipes;
                 int stuffs = 0;
             } catch (Exception ex) {
                 Logger.getLogger(GraphicalFoodSearch.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            }*/
             
             Window w;
             w = new Window("BigOven Graph Application");
