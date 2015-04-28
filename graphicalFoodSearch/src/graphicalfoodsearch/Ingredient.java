@@ -5,14 +5,29 @@
  */
 package graphicalfoodsearch;
 
+import java.util.Objects;
+import java.util.Vector;
+
 /**
  *
  * @author GEARHARTJJ1
  */
 public class Ingredient {
-    public String ingredientName;
-    public Double amountNeeded;
-    public String prepWork;
+    public String ingredientName = "";
+    public Double amountNeeded = -1.0;
+    public String prepWork = "";
     //used in correlation with the amount, like grams, bottles, etc.
-    public String ingredientUnit;
+    public String ingredientUnit = "";
+    public Vector<Recipe> recipesUsedIn = new Vector<>();
+    @Override
+    public boolean equals(Object obj) {
+        return this.ingredientName.equals(((Ingredient)obj).ingredientName);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 89 * hash + Objects.hashCode(this.ingredientName);
+        return hash;
+    }
 }

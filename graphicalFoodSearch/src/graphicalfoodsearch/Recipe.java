@@ -5,6 +5,7 @@
  */
 package graphicalfoodsearch;
 
+import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -22,4 +23,15 @@ public class Recipe {
     public String category;
     //stored as a string because that is how it will always be used in queries/responses
     public String id;
+    @Override
+    public boolean equals(Object obj) {
+        return this.recipeName.equals(((Recipe)obj).recipeName);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 29 * hash + Objects.hashCode(this.recipeName);
+        return hash;
+    }
 }
