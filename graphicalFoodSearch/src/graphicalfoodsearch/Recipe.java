@@ -13,7 +13,10 @@ import java.util.Vector;
  *
  * @author GEARHARTJJ1
  */
-public class Recipe implements Serializable{
+public class Recipe implements Serializable {
+    // The GUI node associated with this Recipe
+    public Node node;
+    
     public Double estimatedMinutes;
     public String foodType;
     public String description;
