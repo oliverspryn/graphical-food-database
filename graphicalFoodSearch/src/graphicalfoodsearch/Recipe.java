@@ -5,6 +5,7 @@
  */
 package graphicalfoodsearch;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.Vector;
 
@@ -12,7 +13,7 @@ import java.util.Vector;
  *
  * @author GEARHARTJJ1
  */
-public class Recipe {
+public class Recipe implements Serializable{
     public Double estimatedMinutes;
     public String foodType;
     public String description;
