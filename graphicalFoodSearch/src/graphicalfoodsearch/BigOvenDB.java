@@ -4,9 +4,6 @@
  * and open the template in the editor.
  */
 
-//need to get the recipes put in the set from querying by id...
-//alternatively the item could be modified when the by id method is used?
-
 package graphicalfoodsearch;
 
 import java.io.InputStream;
@@ -35,7 +32,7 @@ public class BigOvenDB {
     private final String USER_AGENT = "Mozilla/5.0";
     private final String START_URL = "http://api.bigoven.com";
     private final String API_STRING = "dvxOohB1k0rgliIz7TMZj4x6eGJ93GOD";
-    
+    public int numIngredientsPerRecipe = 5;
     //has side effect of adding the ingredients to the set of ingredients, and updating the recipeUsedIm vector for the ingredient
     //also updates the Recipe in the set so that it has the ingredients it is connected with
     public Recipe getRecipeAndIngredientsById(String id) throws Exception {
@@ -141,6 +138,7 @@ public class BigOvenDB {
         return recipes;
     }
     
+    //this is modified to only get the first 5 ingredients for each recipe
     private Recipe getRecipeFromNode(Node recipeNode){
         Recipe recipe = new Recipe();
         if (recipeNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -186,7 +184,11 @@ public class BigOvenDB {
             try {
                 Node ingredientsNode = eElement.getElementsByTagName("Ingredients").item(0);
                 NodeList ingredientNodes = ((Element) ingredientsNode).getElementsByTagName("Ingredient");
-                for(int i = 0; i < ingredientNodes.getLength(); i++){
+                int length = numIngredientsPerRecipe;
+                if(ingredientNodes.getLength()<5){
+                    length = ingredientNodes.getLength();
+                }
+                for(int i = 0; i < length; i++){
                     Node ingredientNode = ingredientNodes.item(i);
                     Ingredient ingredient = getIngredientFromNode(ingredientNode);
                     recipe.ingredients.add(ingredient);
