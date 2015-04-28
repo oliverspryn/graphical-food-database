@@ -42,6 +42,7 @@ public class GraphicalFoodSearch {
                     System.out.println();
                 }
                 Set<Recipe> testRecipe = FoodGraphData.recipes;
+                FoodGraphData.serializeData("testStuffs.txt");
                 int stuffs = 0;
             } catch (Exception ex) {
                 Logger.getLogger(GraphicalFoodSearch.class.getName()).log(Level.SEVERE, null, ex);

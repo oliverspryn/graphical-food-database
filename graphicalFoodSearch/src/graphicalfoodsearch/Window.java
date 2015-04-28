@@ -104,8 +104,8 @@ public class Window extends JFrame implements ActionListener {
 		File file;
 		
 		if(e.getSource() == New) {
-			FileBean event = new FileBean();
-			event.SetOperation(OperationType.NEW);
+			for(IFileListener l : FileHandlers)
+				l.NewHandler();
 		} else if (e.getSource() == Open) {
 			file = OpenFileBrowser(BrowserType.OPEN);
 			
@@ -133,8 +133,13 @@ public class Window extends JFrame implements ActionListener {
 				event.SetOperation(e.getSource() == Save ? OperationType.SAVE : OperationType.SAVE_AS);
 				
 			//Dispatch the event
-				for(IFileListener l : FileHandlers)
-					l.OpenHandler(event);
+				for(IFileListener l : FileHandlers) {
+					if (e.getSource() == Save) {
+						l.SaveHandler(event);
+					} else {
+						l.SaveAsHandler(event);
+					}
+				}
 			}
 		} else if (e.getSource() == Exit) {
 			dispose();
