@@ -23,7 +23,9 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 enum BrowserType {
@@ -59,10 +61,14 @@ public class Window extends JFrame implements ActionListener {
 //Menu handles
 	private JMenu File;
 	private JMenuBar MenuBar;
+	private JPopupMenu PopUp;
+	private Boolean PopUpOpen = false;
 	
 	private JMenuItem New;
 	private JMenuItem Open;
+	private JMenuItem OpenPop;
 	private JMenuItem Save;
+	private JMenuItem SavePop;
 	private JMenuItem SaveAs;
 	private JMenuItem Exit;
 	
@@ -90,8 +96,7 @@ public class Window extends JFrame implements ActionListener {
 	//Setup the JPanel as a canvas
 		Canvas = new JPanel();
 		Canvas.setBackground(Color.WHITE);
-		//add(Canvas);
-                getContentPane().add(Canvas, BorderLayout.CENTER);
+		getContentPane().add(Canvas, BorderLayout.CENTER);
 		
 	//Configure the file browser extension
 		Extension = "*.*";
@@ -103,21 +108,31 @@ public class Window extends JFrame implements ActionListener {
 		repaint();
 		
 	//Prepare the event registry
-		ClickHandlers = new ArrayList<IMouseListener>();
-		FileHandlers = new ArrayList<IFileListener>();
+		ClickHandlers = new ArrayList<>();
+		FileHandlers = new ArrayList<>();
 		
 	//Listen for JPanel mouse clicks
 		Canvas.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent me) {
-			//Populate the Java bean
-				ClickBean click = new ClickBean();
-				click.SetX(me.getX());
-				click.SetY(me.getY());
-				
-			//Dispatch the event
-				for(IMouseListener l : ClickHandlers)
-					l.ClickHandler(click);
+				if(SwingUtilities.isLeftMouseButton(me)) {
+					if(!PopUpOpen) {
+					//Populate the Java bean
+						ClickBean click = new ClickBean();
+						click.SetX(me.getX());
+						click.SetY(me.getY());
+
+					//Dispatch the event
+						ClickHandlers.stream().forEach((l) -> {
+							l.ClickHandler(click);	
+						});	
+					} else {
+						PopUpOpen = false;
+					}
+				} else if (SwingUtilities.isRightMouseButton(me)) {
+					PopUp.show(me.getComponent(), me.getX(), me.getY());
+					PopUpOpen = true;
+				}
 			}
 
 			@Override
@@ -139,9 +154,10 @@ public class Window extends JFrame implements ActionListener {
 		File file;
 		
 		if(e.getSource() == New) {
-			for(IFileListener l : FileHandlers)
+			FileHandlers.stream().forEach((l) -> {
 				l.NewHandler();
-		} else if (e.getSource() == Open) {
+			});
+		} else if (e.getSource() == Open || e.getSource() == OpenPop) {
 			file = OpenFileBrowser(BrowserType.OPEN);
 			
 			if(file != null) {
@@ -153,10 +169,11 @@ public class Window extends JFrame implements ActionListener {
 				event.SetOperation(OperationType.OPEN);
 				
 			//Dispatch the event
-				for(IFileListener l : FileHandlers)
+				FileHandlers.stream().forEach((l) -> {
 					l.OpenHandler(event);
+				});
 			}
-		} else if (e.getSource() == Save || e.getSource() == SaveAs) {
+		} else if (e.getSource() == Save || e.getSource() == SavePop || e.getSource() == SaveAs) {
 			file = OpenFileBrowser(BrowserType.SAVE);
 			
 			if(file != null) {
@@ -165,16 +182,16 @@ public class Window extends JFrame implements ActionListener {
 				event.SetDirectory(file.getParent());
 				event.SetFileName(file.getAbsoluteFile().getName());
 				event.SetFilePath(file.getAbsolutePath());
-				event.SetOperation(e.getSource() == Save ? OperationType.SAVE : OperationType.SAVE_AS);
+				event.SetOperation((e.getSource() == Save || e.getSource() == SavePop) ? OperationType.SAVE : OperationType.SAVE_AS);
 				
 			//Dispatch the event
-				for(IFileListener l : FileHandlers) {
-					if (e.getSource() == Save) {
+				FileHandlers.stream().forEach((l) -> {
+					if (e.getSource() == Save || e.getSource() == SavePop) {
 						l.SaveHandler(event);
 					} else {
 						l.SaveAsHandler(event);
 					}
-				}
+				});
 			}
 		} else if (e.getSource() == Exit) {
 			dispose();
@@ -186,16 +203,14 @@ public class Window extends JFrame implements ActionListener {
 	}
 	
 	private File OpenFileBrowser(BrowserType type) {
-		int result = -1;
-		
 		if (type == BrowserType.OPEN) {
-			result = FileBrowser.showOpenDialog(this);
+			if(FileBrowser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) {
+				return null;
+			}
 		} else {
-			result = FileBrowser.showSaveDialog(this);
-		}
-		
-		if (result != JFileChooser.APPROVE_OPTION) {
-			return null;
+			if(FileBrowser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+				return null;
+			}
 		}
 		
 		FileBrowser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -219,6 +234,7 @@ public class Window extends JFrame implements ActionListener {
 	
 	private void SetupMenu() {
 		MenuBar = new JMenuBar();
+		PopUp = new JPopupMenu();
 		
 	//Add in the top-level "File" menu
 		File = new JMenu("File");
@@ -252,5 +268,15 @@ public class Window extends JFrame implements ActionListener {
 	//Add all menu items to the menu bar
 		MenuBar.add(File);
 		setJMenuBar(MenuBar);
+		
+	//Add items to the context menu
+		OpenPop = PopUp.add("Open");
+		SavePop = PopUp.add("Save");
+		
+		OpenPop.setAccelerator(KeyStroke.getKeyStroke('O', InputEvent.CTRL_DOWN_MASK));
+		SavePop.setAccelerator(KeyStroke.getKeyStroke('S', InputEvent.CTRL_DOWN_MASK));
+		
+		OpenPop.addActionListener(this);
+		SavePop.addActionListener(this);
 	}
 }
