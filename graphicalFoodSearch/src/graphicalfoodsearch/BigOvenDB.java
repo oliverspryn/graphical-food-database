@@ -4,8 +4,7 @@
  * and open the template in the editor.
  */
 
-//need to get the recipes put in the set from querying by id...
-//alternatively the item could be modified when the by id method is used?
+//need to make it work so that the recipe ingredients will include the ingredients used to "search" for it
 
 package graphicalfoodsearch;
 
@@ -35,6 +34,7 @@ public class BigOvenDB {
     private final String USER_AGENT = "Mozilla/5.0";
     private final String START_URL = "http://api.bigoven.com";
     private final String API_STRING = "dvxOohB1k0rgliIz7TMZj4x6eGJ93GOD";
+    public int numIngredientsPerRecipe = 5;
     
     //has side effect of adding the ingredients to the set of ingredients, and updating the recipeUsedIm vector for the ingredient
     //also updates the Recipe in the set so that it has the ingredients it is connected with
@@ -66,6 +66,10 @@ public class BigOvenDB {
         //add the ingedients to the Recipe object in the set since bigOven doesn't give it with search results
         for(Recipe recipe : FoodGraphData.recipes){
             if(recipe.recipeName.equals(r.recipeName)){
+                //add in the recipes existing ingredients
+                for (Ingredient i : recipe.ingredients){
+                    r.ingredients.add(i);
+                }
                 recipe.ingredients = r.ingredients;
                 break;
             }
@@ -133,14 +137,22 @@ public class BigOvenDB {
             recipes = getRecipesFromSearchNode(searchNode);
         } catch(Exception ex){}
         
+        //for each of the recipes add in the search ingredients as ingedients
+        //this is to help keep the search by ingredient system in check also       
         //add the recipes to the set of recipes
         for(Recipe recipe : recipes){
+            for(String ingred : ingredients){
+                Ingredient ingr = new Ingredient();
+                ingr.ingredientName = ingred;
+                recipe.ingredients.add(ingr);
+            }
             FoodGraphData.recipes.add(recipe);
         }
         
         return recipes;
     }
     
+    //this is modified to only get the first 5 ingredients for each recipe
     private Recipe getRecipeFromNode(Node recipeNode){
         Recipe recipe = new Recipe();
         if (recipeNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -186,7 +198,11 @@ public class BigOvenDB {
             try {
                 Node ingredientsNode = eElement.getElementsByTagName("Ingredients").item(0);
                 NodeList ingredientNodes = ((Element) ingredientsNode).getElementsByTagName("Ingredient");
-                for(int i = 0; i < ingredientNodes.getLength(); i++){
+                int length = numIngredientsPerRecipe-1;
+                if(ingredientNodes.getLength()<length){
+                    length = ingredientNodes.getLength();
+                }
+                for(int i = 0; i < length; i++){
                     Node ingredientNode = ingredientNodes.item(i);
                     Ingredient ingredient = getIngredientFromNode(ingredientNode);
                     recipe.ingredients.add(ingredient);
