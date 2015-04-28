@@ -1,15 +1,19 @@
 package graphicalfoodsearch;
 
+import graphicalfoodsearch.beans.ClickBean;
 import graphicalfoodsearch.beans.FileBean;
 import graphicalfoodsearch.enums.OperationType;
 import graphicalfoodsearch.listeners.IFileListener;
 import java.awt.BorderLayout;
+import graphicalfoodsearch.listeners.IMouseListener;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +72,7 @@ public class Window extends JFrame implements ActionListener {
 	private final Toolkit Toolkit;
 	
 //Event listener registry
+	List<IMouseListener> ClickHandlers;
 	List<IFileListener> FileHandlers;
 
 	public Window(String title) {
@@ -98,7 +103,35 @@ public class Window extends JFrame implements ActionListener {
 		repaint();
 		
 	//Prepare the event registry
+		ClickHandlers = new ArrayList<IMouseListener>();
 		FileHandlers = new ArrayList<IFileListener>();
+		
+	//Listen for JPanel mouse clicks
+		Canvas.addMouseListener(new MouseListener() {
+			@Override
+			public void mouseClicked(MouseEvent me) {
+			//Populate the Java bean
+				ClickBean click = new ClickBean();
+				click.SetX(me.getX());
+				click.SetY(me.getY());
+				
+			//Dispatch the event
+				for(IMouseListener l : ClickHandlers)
+					l.ClickHandler(click);
+			}
+
+			@Override
+			public void mousePressed(MouseEvent me) { }
+
+			@Override
+			public void mouseReleased(MouseEvent me) { }
+
+			@Override
+			public void mouseEntered(MouseEvent me) { }
+
+			@Override
+			public void mouseExited(MouseEvent me) { }
+		});
 	}
 	
 	@Override
@@ -171,7 +204,11 @@ public class Window extends JFrame implements ActionListener {
 		return FileBrowser.getSelectedFile();
 	}
 	
-	public void RegisterListener(IFileListener handler) {
+	public void RegisterClickListener(IMouseListener handler) {
+		ClickHandlers.add(handler);
+	}
+	
+	public void RegisterFileListener(IFileListener handler) {
 		FileHandlers.add(handler);
 	}
 	

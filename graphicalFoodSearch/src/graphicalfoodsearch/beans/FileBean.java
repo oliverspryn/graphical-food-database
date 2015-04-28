@@ -2,10 +2,6 @@ package graphicalfoodsearch.beans;
 
 import graphicalfoodsearch.enums.OperationType;
 
-/**
- *
- * @author Oliver
- */
 public class FileBean extends GUIBean {
 	private String Directory;
 	private String FileName;
