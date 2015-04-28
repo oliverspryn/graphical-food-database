@@ -153,7 +153,6 @@ public class BigOvenDB {
                 for(int i = 0; i < ingredientNodes.getLength(); i++){
                     Node ingredientNode = ingredientNodes.item(i);
                     Ingredient ingredient = getIngredientFromNode(ingredientNode);
-                    ingredient.recipes.add(recipe);
                     recipe.ingredients.add(ingredient);
                 }
             } catch (Exception ex) {}
