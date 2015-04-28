@@ -13,6 +13,9 @@ import java.util.Vector;
  * @author GEARHARTJJ1
  */
 public class Ingredient {
+    // The GUI node associated with this Ingredient
+    public Node node;
+    
     public String ingredientName = "";
     public Double amountNeeded = -1.0;
     public String prepWork = "";
