@@ -74,6 +74,8 @@ public class Window extends JFrame implements ActionListener {
 		
 	//Create the menu
 		SetupMenu();
+		revalidate();
+		repaint();
 	}
 	
 	@Override
