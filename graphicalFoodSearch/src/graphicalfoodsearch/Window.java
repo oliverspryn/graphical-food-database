@@ -50,7 +50,7 @@ public class Window extends JFrame implements ActionListener {
 	private JMenuItem Exit;
 	
 //Window setup and properties
-	private final JPanel Canvas;
+	private final Canvas Canvas;
 	private final Dimension Size;
 	private final Toolkit Toolkit;
 	
@@ -71,7 +71,7 @@ public class Window extends JFrame implements ActionListener {
 		setVisible(true);
 		
 	//Setup the JPanel as a canvas
-		Canvas = new JPanel();
+		Canvas = new Canvas();
 		Canvas.setBackground(Color.WHITE);
 		getContentPane().add(Canvas, BorderLayout.CENTER);
 		
@@ -175,7 +175,7 @@ public class Window extends JFrame implements ActionListener {
 		}
 	}
 	
-	public JPanel GetPanel() {
+	public Canvas GetCanvas() {
 		return Canvas;
 	}
 	
