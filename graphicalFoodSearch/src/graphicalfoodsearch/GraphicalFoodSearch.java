@@ -53,14 +53,16 @@ public class GraphicalFoodSearch {
             w = new Window("BigOven Graph Application");
             w.SetExtension("bga");
 			
-			w.RegisterClickListener(new IMouseListener() {
-				@Override
-				public void ClickHandler(ClickBean bean) {
-					System.out.print(bean.GetX());
-					System.out.print(" x ");
-					System.out.println(bean.GetY());
-				}
-			});
+            w.RegisterClickListener(new IMouseListener() {
+                @Override
+                public void ClickHandler(ClickBean bean) {
+                    System.out.print(bean.GetX());
+                    System.out.print(" x ");
+                    System.out.println(bean.GetY());
+                    
+                    w.GetCanvas().handleClick(bean);
+                }
+            });
 			
             w.RegisterFileListener(new IFileListener() {
                 @Override
