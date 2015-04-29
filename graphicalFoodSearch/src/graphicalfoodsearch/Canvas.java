@@ -6,6 +6,7 @@
 package graphicalfoodsearch;
 
 import graphicalfoodsearch.beans.ClickBean;
+import graphicalfoodsearch.beans.MouseMoveBean;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -144,7 +145,26 @@ public class Canvas extends JPanel {
                     labelTitle = ((Ingredient)node.getValue()).ingredientName;
                 else if(node.getValue() instanceof Recipe)
                     labelTitle = ((Recipe)node.getValue()).recipeName;
+                
                 System.out.println("Clicked on '" + labelTitle + "'");
+                
+                break;
+            }
+        }
+    }
+    
+    public void handleMouseMove(MouseMoveBean move) {
+        // Detect if the mouse position was inside a node
+        for(Map.Entry<Rectangle,Object> node : nodesByLocation.entrySet()) {
+            Point mouseLoc = new Point(move.GetX(), move.GetY());
+            if(node.getKey().contains(mouseLoc)) {
+                String labelTitle = "";
+                if(node.getValue() instanceof Ingredient)
+                    labelTitle = ((Ingredient)node.getValue()).ingredientName;
+                else if(node.getValue() instanceof Recipe)
+                    labelTitle = ((Recipe)node.getValue()).recipeName;
+                
+                System.out.println("Mouse hovered over '" + labelTitle + "'");
                 
                 break;
             }

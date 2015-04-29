@@ -7,8 +7,10 @@ package graphicalfoodsearch;
 
 import graphicalfoodsearch.beans.ClickBean;
 import graphicalfoodsearch.beans.FileBean;
+import graphicalfoodsearch.beans.MouseMoveBean;
 import graphicalfoodsearch.listeners.IFileListener;
 import graphicalfoodsearch.listeners.IMouseListener;
+import graphicalfoodsearch.listeners.IMouseMoveListener;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
@@ -61,6 +63,13 @@ public class GraphicalFoodSearch {
                     System.out.println(bean.GetY());
                     
                     w.GetCanvas().handleClick(bean);
+                }
+            });
+            
+            w.RegisterMouseMoveListener(new IMouseMoveListener() {
+                @Override
+                public void MouseMoveHandler(MouseMoveBean bean) {
+                    w.GetCanvas().handleMouseMove(bean);
                 }
             });
 			

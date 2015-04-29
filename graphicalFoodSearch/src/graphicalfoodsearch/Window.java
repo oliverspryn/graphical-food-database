@@ -2,10 +2,12 @@ package graphicalfoodsearch;
 
 import graphicalfoodsearch.beans.ClickBean;
 import graphicalfoodsearch.beans.FileBean;
+import graphicalfoodsearch.beans.MouseMoveBean;
 import graphicalfoodsearch.enums.BrowserType;
 import graphicalfoodsearch.enums.OperationType;
 import graphicalfoodsearch.listeners.IFileListener;
 import graphicalfoodsearch.listeners.IMouseListener;
+import graphicalfoodsearch.listeners.IMouseMoveListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -15,6 +17,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +59,7 @@ public class Window extends JFrame implements ActionListener {
 //Event listener registry
 	List<IMouseListener> ClickHandlers;
 	List<IFileListener> FileHandlers;
+        List<IMouseMoveListener> MouseMoveHandlers;
 
 	public Window(String title) {
 		super(title);
@@ -86,6 +90,7 @@ public class Window extends JFrame implements ActionListener {
 	//Prepare the event registry
 		ClickHandlers = new ArrayList<>();
 		FileHandlers = new ArrayList<>();
+                MouseMoveHandlers = new ArrayList<>();
 		
 	//Listen for JPanel mouse clicks
 		Canvas.addMouseListener(new MouseListener() {
@@ -123,6 +128,27 @@ public class Window extends JFrame implements ActionListener {
 			@Override
 			public void mouseExited(MouseEvent me) { }
 		});
+                
+        //Listen for mouse move events within the JPanel
+                Canvas.addMouseMotionListener(new MouseMotionListener() {
+
+                    @Override
+                    public void mouseDragged(MouseEvent e) { }
+
+                    @Override
+                    public void mouseMoved(MouseEvent e) {
+                        //Populate the Java bean
+                        MouseMoveBean move = new MouseMoveBean();
+                        move.SetX(e.getX());
+                        move.SetY(e.getY());
+                        
+                        //Dispatch the event
+                        MouseMoveHandlers.stream().forEach((l) -> {
+                            l.MouseMoveHandler(move);
+                        });
+                    }
+                    
+                });
 	}
 	
 	@Override
@@ -200,6 +226,10 @@ public class Window extends JFrame implements ActionListener {
 	public void RegisterClickListener(IMouseListener handler) {
 		ClickHandlers.add(handler);
 	}
+        
+        public void RegisterMouseMoveListener(IMouseMoveListener handler) {
+                MouseMoveHandlers.add(handler);
+        }
 	
 	public void RegisterFileListener(IFileListener handler) {
 		FileHandlers.add(handler);
