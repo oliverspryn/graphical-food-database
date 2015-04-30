@@ -22,7 +22,7 @@ import java.util.HashSet;
 public class FoodGraphData implements Serializable {
     public static HashSet<Ingredient> ingredients = new HashSet<>();
     public static HashSet<Recipe> recipes = new HashSet<>();    
-    public static Ingredient firstIngredient = new Ingredient();
+    public static Ingredient firstIngredient = null; // null tells Canvas not to draw the graph yet
     
     public static Boolean serializeData(String fileName) {
         Boolean success = true;
@@ -49,9 +49,13 @@ public class FoodGraphData implements Serializable {
                     new ObjectInputStream(
                     new BufferedInputStream(
                     new FileInputStream(fileName)));
-            FoodGraphData.firstIngredient = (Ingredient)oiStream.readObject();
+            Ingredient newFirstIngredient = (Ingredient)oiStream.readObject();
             FoodGraphData.ingredients = (HashSet<Ingredient>)oiStream.readObject();
             FoodGraphData.recipes = (HashSet<Recipe>)oiStream.readObject();
+            
+            // We need to do this last, because setting fisrtIngredient to non-null signals the Canvas to start
+            // drawing the tree. It would be bad for this to happen while we were still loading.
+            FoodGraphData.firstIngredient = newFirstIngredient;
         } catch(Exception ex){
             success = false;
         }
