@@ -74,12 +74,12 @@ public class Canvas extends JPanel implements ActionListener {
         if(ingredientOrRecipe instanceof Ingredient) {
             content = ((Ingredient)ingredientOrRecipe).ingredientName;
             color = Color.ORANGE;
-            System.out.println("ingredient");
+            //System.out.println("ingredient");
         }
         else if(ingredientOrRecipe instanceof Recipe) {
             content = ((Recipe)ingredientOrRecipe).recipeName;
             color = Color.YELLOW;
-            System.out.println("recipe");
+            //System.out.println("recipe");
         }
         // Note that if ingredientOrRecipe is neither of these types, we'll just draw an empty box.
         // Ideally we'd throw an exception here, but this will suffice for our purposes.
@@ -118,20 +118,24 @@ public class Canvas extends JPanel implements ActionListener {
         
         // Clear nodesByLocation, since we're rebuilding the node tree from scratch
         nodesByLocation.clear();
-
-        // Determine the maximum depth of the new tree (for spacing on screen)
-        int totalNodeCount = FoodGraphData.ingredients.size() + FoodGraphData.recipes.size();
-        int maxDepth = (int) (Math.log(totalNodeCount) / Math.log(2));
-
+        
+        // To draw the tree, we will run a breadth-first traversal twice: the first time to set each node's
+        // parent pointer, depth, and share of the screen width; and the second time to actually draw the tree
+        // based on this information.
+        
         // Draw the root node (starting ingredient) at the top-center of the canvas
         drawNode(g, this.getWidth() / 2, 5, FoodGraphData.firstIngredient);
 
         // Build the "tree" based on a breadth-first traversal of the Ingredients and Recipes
-        // starting from startingIngredient
         Set traversed = new HashSet();
         LinkedList queue = new LinkedList();
+        
+        FoodGraphData.firstIngredient.parentNode = null;
+        FoodGraphData.firstIngredient.depth = 0;
+        FoodGraphData.firstIngredient.widthAllocated = 1.0;
         traversed.add(FoodGraphData.firstIngredient);
         queue.push(FoodGraphData.firstIngredient);
+        
         while (!queue.isEmpty()) {
             Object ingredientOrRecipe = queue.pop();
 
@@ -143,15 +147,20 @@ public class Canvas extends JPanel implements ActionListener {
                     if (!traversed.contains(recipe)) {
                         traversed.add(recipe);
 
-                        // Create a Node representing this ingredient in the tree.
-                        // Each level in the tree will be 40 pixels tall.
-                        // Each node in this level will be spaced evenly across the width of the panel.
-                        int nodeCount = traversed.size();
-                        int currentDepth = (int) Math.floor(Math.log(nodeCount) / Math.log(2));
-                        int yCoord = currentDepth * 40 + 5;
-                        int xSpacing = (int) (this.getWidth() / (Math.pow(2, currentDepth) + 1));
-                        int xCoord = (i + 1) * xSpacing;
-
+                        recipe.parentNode = ingredient;
+                        recipe.depth = ingredient.depth + 1;
+                        recipe.widthAllocated = ingredient.widthAllocated / ingredient.recipesUsedIn.size();
+                        recipe.firstXAllocated = (int) (ingredient.firstXAllocated + (i * recipe.widthAllocated * this.getWidth()));
+                        
+                        System.out.println(i + " of " + ingredient.recipesUsedIn.size() + ": width = " +
+                                recipe.widthAllocated + "; first x = " + recipe.firstXAllocated);
+                        
+                        // Draw a node representing this ingredient on the screen.
+                        // Each level in the tree will have height 40, starting from y=5.
+                        int yCoord = recipe.depth * 40 + 5;
+                        // Horizontally, we will position this node in the middle of its allocated space.
+                        int xCoord = (int) (recipe.firstXAllocated + (recipe.widthAllocated / 2 * this.getWidth()));
+                        
                         drawNode(g, xCoord, yCoord, recipe);
 
                         queue.add(recipe);
@@ -165,13 +174,17 @@ public class Canvas extends JPanel implements ActionListener {
                     if (!traversed.contains(ingredient)) {
                         traversed.add(ingredient);
 
-                        // As above, create a Node representing this recipe in the tree.
-                        int nodeCount = traversed.size();
-                        int currentDepth = (int) Math.floor(Math.log(nodeCount) / Math.log(2));
-                        int yCoord = currentDepth * 40 + 5;
-                        int xSpacing = (int) (this.getWidth() / (Math.pow(2, currentDepth) + 1));
-                        int xCoord = (i + 1) * xSpacing;
-
+                        ingredient.parentNode = recipe;
+                        ingredient.depth = recipe.depth + 1;
+                        ingredient.widthAllocated = recipe.widthAllocated / recipe.ingredients.size();
+                        ingredient.firstXAllocated = (int) (recipe.firstXAllocated + (i * ingredient.widthAllocated * this.getWidth()));
+                        
+                        // Draw a node representing this recipe on the screen.
+                        // Each level in the tree will have height 40, starting from y=5.
+                        int yCoord = ingredient.depth * 40 + 5;
+                        // Horizontally, we will position this node in the middle of its allocated space.
+                        int xCoord = (int) (ingredient.firstXAllocated + (ingredient.widthAllocated / 2 * this.getWidth()));
+                        
                         drawNode(g, xCoord, yCoord, ingredient);
 
                         queue.add(ingredient);

@@ -14,6 +14,11 @@ import java.util.Vector;
  * @author GEARHARTJJ1
  */
 public class Recipe implements Serializable {
+    public Ingredient parentNode = null;
+    public int depth = 0; // depth in the tree of Ingredients and Recipes
+    public double widthAllocated = 1.0; // fraction of screen width allocated to this node and its children
+    public int firstXAllocated = 0; // left-hand x coord. of the width allocated to this node and its children
+    
     public Double estimatedMinutes;
     public String foodType;
     public String description;
