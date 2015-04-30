@@ -81,7 +81,28 @@ public class Canvas extends JPanel implements ActionListener {
             color = Color.YELLOW;
         
         Graphics2D g2 = (Graphics2D) g;
+        //draw a line to parent and rectangle
+        if(ingredientOrRecipe instanceof Ingredient) {
+            Ingredient inged = ((Ingredient)ingredientOrRecipe);
+            inged.centerX = x+5;
+            inged.centerY = y+5;
+            if (inged.parentNode != null) {
+                g2.setColor(Color.BLACK);
+                g2.drawLine(inged.centerX, inged.centerY, inged.parentNode.centerX, inged.parentNode.centerY);
+                System.out.println(inged.ingredientName + " : " + inged.parentNode.recipeName);
+            }
+            
+        }  else if(ingredientOrRecipe instanceof Recipe) {
+            Recipe recep = ((Recipe)ingredientOrRecipe);
+            recep.centerX = x+5;
+            recep.centerY = y+5;
+            if (recep.parentNode != null) {
+                g2.setColor(Color.BLACK);
+                g2.drawLine(recep.centerX, recep.centerY, recep.parentNode.centerX, recep.parentNode.centerY);
+            }
+            
         
+        }
         Rectangle2D.Float bounds = new Rectangle2D.Float(x, y, 10, 10);
         g2.setColor(color);
         g2.fill(bounds);
@@ -214,13 +235,6 @@ public class Canvas extends JPanel implements ActionListener {
                         int yCoord = recipe.depth * 40 + 5;
                         // Horizontally, we will position this node in the middle of its allocated space.
                         int xCoord = (int) (recipe.firstXAllocated + (recipe.widthAllocated / 2 * this.getWidth()));
-
-                        //Set center coordinates - to be used for drawing a line to parent
-                        FontMetrics metrics = g.getFontMetrics();
-                        int centX = xCoord + metrics.stringWidth(recipe.recipeName)/2 + 5;
-                        int centY = yCoord + 10;
-                        recipe.centerX = centX;
-                        recipe.centerY = centY;
                         
                         drawNode(g, xCoord, yCoord, recipe);
 
@@ -252,13 +266,7 @@ public class Canvas extends JPanel implements ActionListener {
                         int yCoord = ingredient.depth * 40 + 5;
                         // Horizontally, we will position this node in the middle of its allocated space.
                         int xCoord = (int) (ingredient.firstXAllocated + (ingredient.widthAllocated / 2 * this.getWidth()));
-                        
-                        //Set center coordinates - to be used for drawing a line to parent
-                        FontMetrics metrics = g.getFontMetrics();
-                        int centX = xCoord + metrics.stringWidth(recipe.recipeName)/2 + 5;
-                        int centY = yCoord + 10;
-                        recipe.centerX = centX;
-                        recipe.centerY = centY;
+                       
 
                         drawNode(g, xCoord, yCoord, ingredient);
 
