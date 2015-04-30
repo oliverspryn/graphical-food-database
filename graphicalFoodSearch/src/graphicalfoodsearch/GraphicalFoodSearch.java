@@ -91,17 +91,45 @@ public class GraphicalFoodSearch {
 
                 @Override
                 public void OpenHandler(FileBean bean) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    // Clear the database
+                    // (Not strictly necessary, I think, since FoodGraphData.loadData() is designed to not cause
+                    // problems if Canvas tries to draw during loading; but it's good to be sure.)
+                    FoodGraphData.firstIngredient = null; // This signals Canvas to stop drawing the tree
+                    FoodGraphData.ingredients.clear();
+                    FoodGraphData.recipes.clear();
+
+                    // Update the screen so the old tree disappears
+                    w.revalidate();
+                    w.repaint();
+                    
+                    // Load the new data from file
+                    boolean succeeded = FoodGraphData.loadData(bean.GetFilePath());
+                    
+                    if(!succeeded) {
+                        JOptionPane.showMessageDialog(w.GetCanvas(),
+                                "Could not load data from file! Maybe the file doesn't exist or is corrupted?");
+                        return;
+                    }
+                    
+                    // Update the screen again to reflect the new tree
+                    w.revalidate();
+                    w.repaint();
                 }
 
                 @Override
                 public void SaveHandler(FileBean bean) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    // Right now, there's no difference between "Save" and "Save As".
+                    SaveAsHandler(bean);
                 }
 
                 @Override
                 public void SaveAsHandler(FileBean bean) {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    boolean succeeded = FoodGraphData.serializeData(bean.GetFilePath());
+                    
+                    if(succeeded)
+                        JOptionPane.showMessageDialog(w.GetCanvas(), "Successfully saved data to file.");
+                    else
+                        JOptionPane.showMessageDialog(w.GetCanvas(), "Could not save data to file! Maybe you don't have permissions to write to this location?");
                 }
             });
             
@@ -148,6 +176,9 @@ public class GraphicalFoodSearch {
             // Ask the user to enter a new starting ingredient
             String ingredientName = JOptionPane.showInputDialog(w.GetCanvas(),
                     "Enter a starting ingredient:");
+            
+            if(ingredientName == null) // The user clicked "Cancel"
+                return;
 
             // Fetch the ingredient from BigOven and build the initial tree from it
             try {

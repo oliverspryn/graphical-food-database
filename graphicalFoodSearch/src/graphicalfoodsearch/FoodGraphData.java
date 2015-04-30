@@ -49,9 +49,13 @@ public class FoodGraphData implements Serializable {
                     new ObjectInputStream(
                     new BufferedInputStream(
                     new FileInputStream(fileName)));
-            FoodGraphData.firstIngredient = (Ingredient)oiStream.readObject();
+            Ingredient newFirstIngredient = (Ingredient)oiStream.readObject();
             FoodGraphData.ingredients = (HashSet<Ingredient>)oiStream.readObject();
             FoodGraphData.recipes = (HashSet<Recipe>)oiStream.readObject();
+            
+            // We need to do this last, because setting fisrtIngredient to non-null signals the Canvas to start
+            // drawing the tree. It would be bad for this to happen while we were still loading.
+            FoodGraphData.firstIngredient = newFirstIngredient;
         } catch(Exception ex){
             success = false;
         }
