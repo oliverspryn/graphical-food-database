@@ -14,6 +14,7 @@ import java.util.Vector;
  * @author GEARHARTJJ1
  */
 public class Ingredient implements Serializable {
+    public int centerX, centerY;
     public String ingredientName = "";
     public Double amountNeeded = -1.0;
     public String prepWork = "";

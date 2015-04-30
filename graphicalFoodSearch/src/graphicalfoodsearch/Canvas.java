@@ -121,6 +121,14 @@ public class Canvas extends JPanel {
                         int xSpacing = (int) (this.getWidth() / (Math.pow(2, currentDepth) + 1));
                         int xCoord = (i + 1) * xSpacing;
 
+                        //Set center coordinates
+                        FontMetrics metrics = g.getFontMetrics();
+                        int centX = xCoord + metrics.stringWidth(recipe.recipeName)/2 + 5;
+                        int centY = yCoord + 10;
+                        recipe.centerX = centX;
+                        recipe.centerY = centY;
+                        
+                        //Draws node and a line from center coords to parent center coords
                         drawNode(g, xCoord, yCoord, recipe);
 
                         queue.add(recipe);
@@ -141,6 +149,14 @@ public class Canvas extends JPanel {
                         int xSpacing = (int) (this.getWidth() / (Math.pow(2, currentDepth) + 1));
                         int xCoord = (i + 1) * xSpacing;
 
+                        //Set center coordinates
+                        FontMetrics metrics = g.getFontMetrics();
+                        int centX = xCoord + metrics.stringWidth(recipe.recipeName)/2 + 5;
+                        int centY = yCoord + 10;
+                        recipe.centerX = centX;
+                        recipe.centerY = centY;
+                        
+                        //Draws node and a line from center coords to parent center coords
                         drawNode(g, xCoord, yCoord, ingredient);
 
                         queue.add(ingredient);

@@ -14,6 +14,7 @@ import java.util.Vector;
  * @author GEARHARTJJ1
  */
 public class Recipe implements Serializable {
+    public int centerX, centerY;
     public Double estimatedMinutes;
     public String foodType;
     public String description;
