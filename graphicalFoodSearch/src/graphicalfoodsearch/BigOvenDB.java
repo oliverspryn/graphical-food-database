@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.Vector;
 import javax.xml.parsers.DocumentBuilder;
@@ -39,7 +40,8 @@ public class BigOvenDB {
     //has side effect of adding the ingredients to the set of ingredients, and updating the recipeUsedIm vector for the ingredient
     //also updates the Recipe in the set so that it has the ingredients it is connected with
     public Recipe getRecipeAndIngredientsById(String id) throws Exception {
-        String url = START_URL+"/recipe/"+id+"?api_key="+API_STRING;
+        String url = START_URL+"/recipe/"+URLEncoder.encode(id)+"?api_key="+API_STRING;
+        System.out.println("DEBUG: querying URL " + url);
  
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -109,7 +111,8 @@ public class BigOvenDB {
         }
         
         //get the data
-        String url = START_URL+"/recipes?pg=1&rpp=5&any_kw="+ingredientString+"&api_key="+API_STRING;
+        String url = START_URL+"/recipes?pg=1&rpp=5&any_kw="+URLEncoder.encode(ingredientString)+"&api_key="+API_STRING;
+        System.out.println("DEBUG: querying URL " + url);
  
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();

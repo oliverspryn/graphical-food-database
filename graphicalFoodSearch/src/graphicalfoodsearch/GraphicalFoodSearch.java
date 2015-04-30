@@ -26,6 +26,8 @@ import javax.swing.JPanel;
 public class GraphicalFoodSearch {
     
         static Window w;
+        
+        static BigOvenDB db;
     
     /**
      * @param args the command line arguments
@@ -96,7 +98,7 @@ public class GraphicalFoodSearch {
             });
             
             //// TEST CODE FOR TREE DRAWING
-            BigOvenDB db = new BigOvenDB();
+            db = new BigOvenDB();
             try {
                 Vector<Recipe> recipes = db.searchByIngredient("potato");
                 for(Recipe r : recipes){
@@ -118,4 +120,29 @@ public class GraphicalFoodSearch {
                 Logger.getLogger(GraphicalFoodSearch.class.getName()).log(Level.SEVERE, null, ex);
             }
 	}
+        
+        // Uses the static DB (API) instance to search for recipes associated with an ingredient,
+        // adding them to the global recipes set.
+        // Triggers a window repaint to update the tree displayed on screen.
+        public static Vector<Recipe> searchDBByIngredient(Ingredient ingredient) throws Exception {
+            Vector<Recipe> recipes = db.searchByIngredient(ingredient.ingredientName);
+            
+            w.revalidate();
+            w.repaint();
+            
+            return recipes;
+        }
+        
+        // Uses the static DB (API) instance to fill in the ingredients field of a Recipe object
+        // (when a search by ingredient initially returns a Recipe, it does not include any ingredients).
+        // Returns the "filled in" Recipe object, and also updates the global recipe and ingredient sets.
+        // Triggers a window repaint to update the tree displayed on screen.
+        public static Recipe dbFillRecipeIngredients(Recipe recipe) throws Exception {
+            Recipe populatedRecipe = db.getRecipeAndIngredientsById(recipe.id);
+            
+            w.revalidate();
+            w.repaint();
+            
+            return populatedRecipe;
+        }
 }

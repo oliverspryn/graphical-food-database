@@ -19,6 +19,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 
 /**
@@ -153,10 +156,30 @@ public class Canvas extends JPanel {
             Point clickLoc = new Point(click.GetX(), click.GetY());
             if(node.getKey().contains(clickLoc)) {
                 String labelTitle = "";
-                if(node.getValue() instanceof Ingredient)
-                    labelTitle = ((Ingredient)node.getValue()).ingredientName;
-                else if(node.getValue() instanceof Recipe)
+                if(node.getValue() instanceof Ingredient) {
+                    Ingredient ingredient = (Ingredient)node.getValue();
+                    labelTitle = ingredient.ingredientName;
+                    
+                    try {
+                        // The user clicked on an Ingredient, so we want to search for recipes associated with that
+                        // ingredient and add them to the tree.
+                        Vector<Recipe> recipes = GraphicalFoodSearch.searchDBByIngredient(ingredient);
+                        
+                        for(Recipe r : recipes) {
+                            GraphicalFoodSearch.dbFillRecipeIngredients(r);
+                        }
+                    } catch (Exception ex) {
+                        Logger.getLogger(Canvas.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
+                }
+                else if(node.getValue() instanceof Recipe) {
                     labelTitle = ((Recipe)node.getValue()).recipeName;
+                    // At the moment, I don't think there's really anything to do in response to a click on a
+                    // Recipe. Since Recipes always have ingredients associated with them, the user will never
+                    // have to click on a Recipe to expand its ingredients - they'll automatically be expanded.
+                    // The "click to search" functionality, thus, is only needed for Ingredient nodes.
+                }
                 
                 System.out.println("Clicked on '" + labelTitle + "'");
                 
