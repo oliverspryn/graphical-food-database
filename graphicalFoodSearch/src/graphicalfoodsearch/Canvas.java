@@ -72,8 +72,27 @@ public class Canvas extends JPanel implements ActionListener {
         w.repaint();
     }
     
-    // Utility function used by paint() to draw an individual text node
+    // Utility function used by paint() to draw a node (colored box)
     private void drawNode(Graphics g, int x, int y, Object ingredientOrRecipe) {
+        Color color = Color.ORANGE;
+        if(ingredientOrRecipe instanceof Ingredient)
+            color = Color.ORANGE;
+        else if(ingredientOrRecipe instanceof Recipe)
+            color = Color.YELLOW;
+        
+        Graphics2D g2 = (Graphics2D) g;
+        
+        Rectangle2D.Float bounds = new Rectangle2D.Float(x, y, 10, 10);
+        g2.setColor(color);
+        g2.fill(bounds);
+        
+        // Add the newly-drawn node to nodesByLocation so we can identify mouse events within it
+        nodesByLocation.put(new Rectangle((int)bounds.x, (int)bounds.y, (int)bounds.width, (int)bounds.height),
+                ingredientOrRecipe);
+    }
+    
+    // Utility function used by paint() to draw a text tooltip for a node
+    private void drawTooltip(Graphics g, int x, int y, Object ingredientOrRecipe) {
         String content = "";
         Color color = Color.ORANGE;
         if(ingredientOrRecipe instanceof Ingredient) {
@@ -109,9 +128,11 @@ public class Canvas extends JPanel implements ActionListener {
         //draw the text
         g2.drawString(content, x + 5, y + height * 3/4);
         
+        //// NOTE: this is no longer happening here since we moved to simple colored boxes with tooltips.
+        //// See the new drawNode() function.
         // Add the newly-drawn node to nodesByLocation so we can identify mouse events within it
-        nodesByLocation.put(new Rectangle((int)bounds.x, (int)bounds.y, (int)bounds.width, (int)bounds.height),
-                ingredientOrRecipe);
+        //nodesByLocation.put(new Rectangle((int)bounds.x, (int)bounds.y, (int)bounds.width, (int)bounds.height),
+        //        ingredientOrRecipe);
     }
 
     // Draw the visualization tree of Recipe and Ingredient nodes based on stored data
@@ -129,7 +150,7 @@ public class Canvas extends JPanel implements ActionListener {
                     labelTitle = ((Recipe)node.getValue()).recipeName;
                 
                 System.out.println("Mouse hovered over '" + labelTitle + "'");
-                drawNode(g, lastHoveredPosition.GetX(), lastHoveredPosition.GetY(), node.getValue());
+                drawTooltip(g, lastHoveredPosition.GetX(), lastHoveredPosition.GetY(), node.getValue());
 
                 break;
             }
