@@ -7,6 +7,7 @@ package graphicalfoodsearch;
 
 import graphicalfoodsearch.beans.ClickBean;
 import graphicalfoodsearch.beans.MouseMoveBean;
+import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -35,16 +36,23 @@ public class Canvas extends JPanel {
     // Utility function used by paint() to draw an individual text node
     private void drawNode(Graphics g, int x, int y, Object ingredientOrRecipe) {
         String content = "";
-        if(ingredientOrRecipe instanceof Ingredient)
+        Color color = Color.ORANGE;
+        if(ingredientOrRecipe instanceof Ingredient) {
             content = ((Ingredient)ingredientOrRecipe).ingredientName;
-        else if(ingredientOrRecipe instanceof Recipe)
+            color = Color.ORANGE;
+            System.out.println("ingredient");
+        }
+        else if(ingredientOrRecipe instanceof Recipe) {
             content = ((Recipe)ingredientOrRecipe).recipeName;
+            color = Color.YELLOW;
+            System.out.println("recipe");
+        }
         // Note that if ingredientOrRecipe is neither of these types, we'll just draw an empty box.
         // Ideally we'd throw an exception here, but this will suffice for our purposes.
         
         // TODO: don't truncate strings, use different colors and overlapping boxes instead
-        if(content.length() > 8)
-            content = content.substring(0, 8) + "...";
+        if(content.length() > 25)
+            content = content.substring(0, 25) + "...";
         
         FontMetrics metrics = g.getFontMetrics();
         float width = metrics.stringWidth(content) + 10;
@@ -54,7 +62,11 @@ public class Canvas extends JPanel {
 
         //draw a rectangle
         Rectangle2D.Float bounds = new Rectangle2D.Float(x, y, width, height);
+        g2.setColor(color);
+        g2.fill(bounds);
+        g2.setColor(Color.black);
         g2.draw(bounds);
+        
         //draw the text
         g2.drawString(content, x + 5, y + height * 3/4);
         
