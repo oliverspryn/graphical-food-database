@@ -41,6 +41,11 @@ public class Canvas extends JPanel implements ActionListener {
     private JMenuItem addRecipeMenuItem;
     private Object lastRightClickedNode; // so right-click menu handlers know which node was clicked on
     
+    private MouseMoveBean lastHoveredPosition;
+    private boolean hoveringOverNode = false;
+    
+    private boolean painting = false;
+    
     private Window w;
 
     //public Ingredient startingIngredient;
@@ -63,8 +68,8 @@ public class Canvas extends JPanel implements ActionListener {
         addIngredientMenuItem.addActionListener(this);
         addRecipeMenuItem.addActionListener(this);
         
-        revalidate();
-        repaint();
+        w.revalidate();
+        w.repaint();
     }
     
     // Utility function used by paint() to draw an individual text node
@@ -111,6 +116,25 @@ public class Canvas extends JPanel implements ActionListener {
 
     // Draw the visualization tree of Recipe and Ingredient nodes based on stored data
     public void paint(Graphics g) {
+        painting = true;
+        
+        // Draw the tooltip if we're hovering over a node
+        for(Map.Entry<Rectangle,Object> node : nodesByLocation.entrySet()) {
+            Point mouseLoc = new Point(lastHoveredPosition.GetX(), lastHoveredPosition.GetY());
+            if(node.getKey().contains(mouseLoc)) {
+                String labelTitle = "";
+                if(node.getValue() instanceof Ingredient)
+                    labelTitle = ((Ingredient)node.getValue()).ingredientName;
+                else if(node.getValue() instanceof Recipe)
+                    labelTitle = ((Recipe)node.getValue()).recipeName;
+                
+                System.out.println("Mouse hovered over '" + labelTitle + "'");
+                drawNode(g, lastHoveredPosition.GetX(), lastHoveredPosition.GetY(), node.getValue());
+
+                break;
+            }
+        }
+        
         // If the starting ingredient hasn't been set, leave the panel blank.
         if (FoodGraphData.firstIngredient == null) {
             return;
@@ -222,6 +246,8 @@ public class Canvas extends JPanel implements ActionListener {
                 }
             }
         }
+        
+        painting = false;
     }
     
     public void handleClick(ClickBean click) {
@@ -294,18 +320,24 @@ public class Canvas extends JPanel implements ActionListener {
     }
     
     public void handleMouseMove(MouseMoveBean move) {
-        // Detect if the mouse position was inside a node
+//        if(painting)
+//            return; // Don't handle mouse move events during paint - I suspect this is causing some issues
+//        
+        lastHoveredPosition = move;
+        
+        // If we changed from being off a node to on one, or vice versa, trigger a repaint.
+        boolean oldHoveringStatus = hoveringOverNode;
+        hoveringOverNode = false;
         for(Map.Entry<Rectangle,Object> node : nodesByLocation.entrySet()) {
-            Point mouseLoc = new Point(move.GetX(), move.GetY());
+            Point mouseLoc = new Point(lastHoveredPosition.GetX(), lastHoveredPosition.GetY());
             if(node.getKey().contains(mouseLoc)) {
-                String labelTitle = "";
-                if(node.getValue() instanceof Ingredient)
-                    labelTitle = ((Ingredient)node.getValue()).ingredientName;
-                else if(node.getValue() instanceof Recipe)
-                    labelTitle = ((Recipe)node.getValue()).recipeName;
+                hoveringOverNode = true;
                 
-                //System.out.println("Mouse hovered over '" + labelTitle + "'");
-                
+                if(oldHoveringStatus != hoveringOverNode) {
+                    w.revalidate();
+                    w.repaint();
+                }
+
                 break;
             }
         }
