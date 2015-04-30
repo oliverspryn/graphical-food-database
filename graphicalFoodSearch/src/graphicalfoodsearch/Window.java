@@ -58,6 +58,7 @@ public class Window extends JFrame implements ActionListener {
 	
 //Event listener registry
 	List<IMouseListener> ClickHandlers;
+        List<IMouseListener> RightClickHandlers;
 	List<IFileListener> FileHandlers;
         List<IMouseMoveListener> MouseMoveHandlers;
 
@@ -74,7 +75,7 @@ public class Window extends JFrame implements ActionListener {
 		setVisible(true);
 		
 	//Setup the JPanel as a canvas
-		Canvas = new Canvas();
+		Canvas = new Canvas(this);
 		Canvas.setBackground(Color.WHITE);
 		getContentPane().add(Canvas, BorderLayout.CENTER);
 		
@@ -89,6 +90,7 @@ public class Window extends JFrame implements ActionListener {
 		
 	//Prepare the event registry
 		ClickHandlers = new ArrayList<>();
+                RightClickHandlers = new ArrayList<>();
 		FileHandlers = new ArrayList<>();
                 MouseMoveHandlers = new ArrayList<>();
 		
@@ -111,8 +113,22 @@ public class Window extends JFrame implements ActionListener {
 						});
 					}
 				} else if (SwingUtilities.isRightMouseButton(me)) {
-					PopUp.show(me.getComponent(), me.getX(), me.getY());
-					PopUpOpen = true;
+					// NOTE: I've commented this out for now so I can implement right-click
+                                        // menus on GUI nodes. Making these coexist with the "global" right-click
+                                        // menu should be possible, but it's not a high priority at the moment
+                                        // since Open and Save are accessible from the menu.
+                                        //PopUp.show(me.getComponent(), me.getX(), me.getY());
+					//PopUpOpen = true;
+                                    
+                                        //Populate the Java bean
+                                                ClickBean click = new ClickBean();
+                                                click.SetX(me.getX());
+                                                click.SetY(me.getY());
+
+                                        //Dispatch the event
+                                                RightClickHandlers.stream().forEach((l) -> {
+                                                    l.ClickHandler(click);
+                                                });
 				}
 			}
 
@@ -226,6 +242,10 @@ public class Window extends JFrame implements ActionListener {
 	public void RegisterClickListener(IMouseListener handler) {
 		ClickHandlers.add(handler);
 	}
+        
+        public void RegisterRightClickListener(IMouseListener handler) {
+                RightClickHandlers.add(handler);
+        }
         
         public void RegisterMouseMoveListener(IMouseMoveListener handler) {
                 MouseMoveHandlers.add(handler);

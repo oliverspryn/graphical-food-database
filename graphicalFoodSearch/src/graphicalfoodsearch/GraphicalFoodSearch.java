@@ -68,6 +68,13 @@ public class GraphicalFoodSearch {
                 }
             });
             
+            w.RegisterRightClickListener(new IMouseListener() {
+               @Override
+               public void ClickHandler(ClickBean bean) {
+                   w.GetCanvas().handleRightClick(bean);
+               }
+            });
+            
             w.RegisterMouseMoveListener(new IMouseMoveListener() {
                 @Override
                 public void MouseMoveHandler(MouseMoveBean bean) {

@@ -13,6 +13,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -22,19 +24,48 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 /**
  *
  * @author JOHNSONEJ1
  */
-public class Canvas extends JPanel {
+public class Canvas extends JPanel implements ActionListener {
+    
+    private JPopupMenu ingredientPopupMenu;
+    private JPopupMenu recipePopupMenu;
+    private JMenuItem addIngredientMenuItem;
+    private JMenuItem addRecipeMenuItem;
+    private Object lastRightClickedNode; // so right-click menu handlers know which node was clicked on
+    
+    private Window w;
 
     public Ingredient startingIngredient;
     
     // Maps bounding rectangles of GUI nodes (as drawn by last call to paint()) to Ingredient/Recipe objects.
     // This is used to detect and respond to mouse events on these nodes.
     private HashMap<Rectangle,Object> nodesByLocation = new HashMap<>();
+    
+    public Canvas(Window w) {
+        this.w = w;
+        
+        ingredientPopupMenu = new JPopupMenu();
+        recipePopupMenu = new JPopupMenu();
+        
+        // Note that the recipe popup menu as the "Add Ingredient" option, and the ingredient popup menu has
+        // "Add Recipe". This is because recipes are children of ingredients, and vice versa.
+        addIngredientMenuItem = recipePopupMenu.add("Add Ingredient");
+        addRecipeMenuItem = ingredientPopupMenu.add("Add Recipe");
+        
+        addIngredientMenuItem.addActionListener(this);
+        addRecipeMenuItem.addActionListener(this);
+        
+        revalidate();
+        repaint();
+    }
     
     // Utility function used by paint() to draw an individual text node
     private void drawNode(Graphics g, int x, int y, Object ingredientOrRecipe) {
@@ -188,6 +219,31 @@ public class Canvas extends JPanel {
         }
     }
     
+    public void handleRightClick(ClickBean click) {
+        // Detect if the click was inside a node
+        for(Map.Entry<Rectangle,Object> node : nodesByLocation.entrySet()) {
+            Point clickLoc = new Point(click.GetX(), click.GetY());
+            if(node.getKey().contains(clickLoc)) {
+                // Save the node so that the right-click menu item handlers can know what was clicked on
+                lastRightClickedNode = node.getValue();
+                
+                String labelTitle = "";
+                if(node.getValue() instanceof Ingredient) {
+                    labelTitle = ((Ingredient)node.getValue()).ingredientName;
+                    ingredientPopupMenu.show(this, click.GetX(), click.GetY());
+                }
+                else if(node.getValue() instanceof Recipe) {
+                    labelTitle = ((Recipe)node.getValue()).recipeName;
+                    recipePopupMenu.show(this, click.GetX(), click.GetY());
+                }
+                
+                System.out.println("Right-clicked on '" + labelTitle + "'");
+                
+                break;
+            }
+        }
+    }
+    
     public void handleMouseMove(MouseMoveBean move) {
         // Detect if the mouse position was inside a node
         for(Map.Entry<Rectangle,Object> node : nodesByLocation.entrySet()) {
@@ -199,10 +255,53 @@ public class Canvas extends JPanel {
                 else if(node.getValue() instanceof Recipe)
                     labelTitle = ((Recipe)node.getValue()).recipeName;
                 
-                System.out.println("Mouse hovered over '" + labelTitle + "'");
+                //System.out.println("Mouse hovered over '" + labelTitle + "'");
                 
                 break;
             }
         }
+    }
+
+    // Event handler for right-click context menu items on Recipe/Ingredient GUI nodes
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(lastRightClickedNode == null) // This should never happen. Just being safe.
+            return;
+        
+        if(e.getSource() == addIngredientMenuItem) { // User clicked "Add Ingredient" from a Recipe node
+            if(lastRightClickedNode instanceof Recipe) { // Should always be true - again, just being safe.
+                Recipe recipe = (Recipe)lastRightClickedNode;
+                
+                // Ask the user to input a new ingredient by name
+                String ingredientName = JOptionPane.showInputDialog(recipePopupMenu, "Enter ingredient name:");
+                
+                // Create an Ingredient from the string entered, and add it to the tree
+                Ingredient newIngredient = new Ingredient();
+                newIngredient.ingredientName = ingredientName;
+                recipe.ingredients.add(newIngredient);
+            }
+        }
+        else if(e.getSource() == addRecipeMenuItem) { // User clicked "Add REcipe" from an Ingredient node
+            if(lastRightClickedNode instanceof Ingredient) { // As above, should always be true.
+                Ingredient ingredient = (Ingredient)lastRightClickedNode;
+                
+                // Ask the user to input a new recipe by name
+                String recipeName = JOptionPane.showInputDialog(ingredientPopupMenu, "Enter recipe name:");
+                
+                // Create a Recipe from the string entered, and add it to the tree
+                Recipe newRecipe = new Recipe();
+                newRecipe.recipeName = recipeName;
+                ingredient.recipesUsedIn.add(newRecipe);
+                
+                // NOTE: this is the only way to get an "orphaned" Recipe node, i.e. with no ingredients associated.
+                // At the moment, I know of no way to get the ingredients, since we'd need to search by BigOven ID,
+                // which isn't possible since the user entered the recipe by name.
+                // If this doens't work well, we MAY need to comment out the "add recipe" functionality.
+            }
+        }
+        
+        // Re-draw the window to update the tree
+        w.revalidate();
+        w.repaint();
     }
 }
