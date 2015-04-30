@@ -210,6 +210,12 @@ public class Canvas extends JPanel implements ActionListener {
                     // Recipe. Since Recipes always have ingredients associated with them, the user will never
                     // have to click on a Recipe to expand its ingredients - they'll automatically be expanded.
                     // The "click to search" functionality, thus, is only needed for Ingredient nodes.
+                    
+                    // NOTE: we can, in fact, get "orphaned", ingredient-less recipe nodes due to interactive
+                    // additions by the user. At the moment, there isn't really a good way to populate their
+                    // ingredients, since we don't have BigOven ID's for them. This is OK - it just means that
+                    // if the user thinks he can click on a recipe leaf node to expand it, he'll be sorely
+                    // disappointed because nothing will happen. It's a feature, not a bug!
                 }
                 
                 System.out.println("Clicked on '" + labelTitle + "'");
