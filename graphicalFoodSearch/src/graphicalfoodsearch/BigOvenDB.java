@@ -107,7 +107,7 @@ public class BigOvenDB {
         }
         //remove extra "%20" from string
         if (ingredientString.endsWith("%20")) {
-            ingredientString = ingredientString.substring(0, ingredientString.length() - 5);
+            ingredientString = ingredientString.substring(0, ingredientString.length() - 3);
         }
         
         //get the data
