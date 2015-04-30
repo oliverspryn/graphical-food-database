@@ -22,7 +22,7 @@ import java.util.HashSet;
 public class FoodGraphData implements Serializable {
     public static HashSet<Ingredient> ingredients = new HashSet<>();
     public static HashSet<Recipe> recipes = new HashSet<>();    
-    public static Ingredient firstIngredient = new Ingredient();
+    public static Ingredient firstIngredient = null; // null tells Canvas not to draw the graph yet
     
     public static Boolean serializeData(String fileName) {
         Boolean success = true;

@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 /**
@@ -27,7 +28,7 @@ public class GraphicalFoodSearch {
     
         static Window w;
         
-        static BigOvenDB db;
+        static BigOvenDB db = new BigOvenDB();
     
     /**
      * @param args the command line arguments
@@ -85,7 +86,7 @@ public class GraphicalFoodSearch {
             w.RegisterFileListener(new IFileListener() {
                 @Override
                 public void NewHandler() {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    initializeApp();
                 }
 
                 @Override
@@ -104,28 +105,8 @@ public class GraphicalFoodSearch {
                 }
             });
             
-            //// TEST CODE FOR TREE DRAWING
-            db = new BigOvenDB();
-            try {
-                Vector<Recipe> recipes = db.searchByIngredient("potato");
-                for(Recipe r : recipes){
-                    db.getRecipeAndIngredientsById(r.id);
-                }
-                
-                // Find the "potato" Ingredient and draw the tree with it as the root
-                if(recipes.size() > 0) {
-                    for(Ingredient i : recipes.get(0).ingredients) {
-                        if("potato".equals(i.ingredientName)) {
-                            w.GetCanvas().startingIngredient = i;
-                            w.revalidate();
-                            w.repaint();
-                            break;
-                        }
-                    }
-                }
-            } catch (Exception ex) {
-                Logger.getLogger(GraphicalFoodSearch.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            // Ask the user for a starting ingredient and build the DB/tree from it
+            initializeApp();
 	}
         
         // Uses the static DB (API) instance to search for recipes associated with an ingredient,
@@ -151,5 +132,45 @@ public class GraphicalFoodSearch {
             w.repaint();
             
             return populatedRecipe;
+        }
+        
+        // Called when the app is first opened, and also when the "New" menu option is chosen.
+        private static void initializeApp() {
+            // Clear the database (if there's anythign there, i.e. this was called by the "New" menu option)
+            FoodGraphData.firstIngredient = null; // This signals Canvas to stop drawing the tree
+            FoodGraphData.ingredients.clear();
+            FoodGraphData.recipes.clear();
+            
+            // Update the screen so the old tree disappears (we don't want it waiting around while the new one loads)
+            w.revalidate();
+            w.repaint();
+
+            // Ask the user to enter a new starting ingredient
+            String ingredientName = JOptionPane.showInputDialog(w.GetCanvas(),
+                    "Enter a starting ingredient:");
+
+            // Fetch the ingredient from BigOven and build the initial tree from it
+            try {
+                Vector<Recipe> recipes = db.searchByIngredient(ingredientName);
+                for (Recipe r : recipes) {
+                    db.getRecipeAndIngredientsById(r.id);
+                }
+
+                // Find the starting ingredient and draw the tree with it as the root
+                if (recipes.size() > 0) {
+                    for (Ingredient i : recipes.get(0).ingredients) {
+                        if (ingredientName.equals(i.ingredientName)) {
+                            FoodGraphData.firstIngredient = i;
+                            w.revalidate();
+                            w.repaint();
+                            break;
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                Logger.getLogger(GraphicalFoodSearch.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(w.GetCanvas(),
+                        "Could not retrieve data from BigOven. Please try again later!");
+            }
         }
 }

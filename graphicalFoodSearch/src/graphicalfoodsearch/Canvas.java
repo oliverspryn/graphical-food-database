@@ -43,7 +43,7 @@ public class Canvas extends JPanel implements ActionListener {
     
     private Window w;
 
-    public Ingredient startingIngredient;
+    //public Ingredient startingIngredient;
     
     // Maps bounding rectangles of GUI nodes (as drawn by last call to paint()) to Ingredient/Recipe objects.
     // This is used to detect and respond to mouse events on these nodes.
@@ -112,7 +112,7 @@ public class Canvas extends JPanel implements ActionListener {
     // Draw the visualization tree of Recipe and Ingredient nodes based on stored data
     public void paint(Graphics g) {
         // If the starting ingredient hasn't been set, leave the panel blank.
-        if (startingIngredient == null) {
+        if (FoodGraphData.firstIngredient == null) {
             return;
         }
         
@@ -124,14 +124,14 @@ public class Canvas extends JPanel implements ActionListener {
         int maxDepth = (int) (Math.log(totalNodeCount) / Math.log(2));
 
         // Draw the root node (starting ingredient) at the top-center of the canvas
-        drawNode(g, this.getWidth() / 2, 5, startingIngredient);
+        drawNode(g, this.getWidth() / 2, 5, FoodGraphData.firstIngredient);
 
         // Build the "tree" based on a breadth-first traversal of the Ingredients and Recipes
         // starting from startingIngredient
         Set traversed = new HashSet();
         LinkedList queue = new LinkedList();
-        traversed.add(startingIngredient);
-        queue.push(startingIngredient);
+        traversed.add(FoodGraphData.firstIngredient);
+        queue.push(FoodGraphData.firstIngredient);
         while (!queue.isEmpty()) {
             Object ingredientOrRecipe = queue.pop();
 
